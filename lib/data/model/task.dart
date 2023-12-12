@@ -29,23 +29,19 @@ class Task extends Equatable {
       TaskKeys.category: category.name,
       TaskKeys.time: time,
       TaskKeys.date: date,
-      TaskKeys.isCompleted: isCompleted,
+      TaskKeys.isCompleted: isCompleted ? 1 : 0,
     };
   }
 
   factory Task.fromJson(Map<String, dynamic> map) {
     return Task(
       id: map[TaskKeys.id],
-      title: map[TaskKeys.title] ??
-          '', // Tambahkan default value atau sesuaikan jika perlu
-      note: map[TaskKeys.note] ??
-          '', // Tambahkan default value atau sesuaikan jika perlu
+      title: map[TaskKeys.title] ?? '',
+      note: map[TaskKeys.note] ?? '',
       category: TaskCategories.stringToTaskCategory(map[TaskKeys.category]),
-      time: map[TaskKeys.time] ??
-          '', // Tambahkan default value atau sesuaikan jika perlu
-      date: map[TaskKeys.date] ??
-          '', // Tambahkan default value atau sesuaikan jika perlu
-      isCompleted: map[TaskKeys.isCompleted] == true,
+      time: map[TaskKeys.time] ?? '',
+      date: map[TaskKeys.date] ?? '',
+      isCompleted: map[TaskKeys.isCompleted] == 1 ? true : false,
     );
   }
 

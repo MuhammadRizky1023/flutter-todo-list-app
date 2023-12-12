@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
+import 'package:todolist/config/config.dart';
 import 'package:todolist/data/model/task.dart';
 import 'package:todolist/utils/utils.dart';
 import 'package:todolist/widget/widgets.dart';
@@ -58,7 +60,10 @@ class TaskList extends StatelessWidget {
               ],
             ),
           ),
-          Checkbox(value: task.isCompleted, onChanged: (value) {})
+          IconButton(
+              onPressed: () => context.push(RouteLocation.editTaskScreen),
+              icon: const Icon(Icons.edit)),
+          Checkbox(value: task.isCompleted, onChanged: onCompleted)
         ],
       ),
     );

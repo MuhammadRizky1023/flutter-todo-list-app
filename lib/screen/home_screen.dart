@@ -3,8 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:todolist/config/config.dart';
+import 'package:todolist/data/data.dart';
+import 'package:todolist/provider/date_provider.dart';
 import 'package:todolist/provider/task/task.dart';
 import 'package:todolist/utils/utils.dart';
+import 'package:todolist/widget/main_drawer.dart';
 import 'package:todolist/widget/widgets.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -17,7 +20,11 @@ class HomeScreen extends ConsumerWidget {
     final colors = context.colorScheme;
     final deviceSize = context.deviceSize;
     final taskState = ref.watch(taskProvider);
+    final unCompletedTask = _unCompletedTask(taskState.tasks, ref);
+    final completedTask = _completedTask(taskState.tasks, ref);
+
     return Scaffold(
+      drawer: MainDrawer(onSelectScreen: _setScreen),
       body: Stack(
         children: [
           Column(
@@ -54,14 +61,16 @@ class HomeScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  DisplayTask(tasks: taskState.tasks),
+                  DisplayTask(
+                    tasks: unCompletedTask,
+                  ),
                   Text(
                     'Completed',
                     style: context.textTheme.headlineMedium,
                   ),
                   const Gap(20),
                   DisplayTask(
-                    tasks: taskState.tasks,
+                    tasks: completedTask,
                     isCompletedTasks: true,
                   ),
                   const Gap(20),
@@ -81,5 +90,37 @@ class HomeScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  void _setScreen(
+    String identifier,
+  ) async {}
+
+  List<Task> _unCompletedTask(List<Task> tasks, WidgetRef ref) {
+    final date = ref.watch(dateProvider);
+    final List<Task> filteredTask = [];
+    for (var task in tasks) {
+      if (!task.isCompleted) {
+        final isTaskDay = Helpers.isTaskFromSelectedDate(task, date);
+        if (isTaskDay) {
+          filteredTask.add(task);
+        }
+      }
+    }
+    return filteredTask;
+  }
+
+  List<Task> _completedTask(List<Task> tasks, WidgetRef ref) {
+    final date = ref.watch(dateProvider);
+    final List<Task> filteredTask = [];
+    for (var task in tasks) {
+      if (task.isCompleted) {
+        final isTaskDay = Helpers.isTaskFromSelectedDate(task, date);
+        if (isTaskDay) {
+          filteredTask.add(task);
+        }
+      }
+    }
+    return filteredTask;
   }
 }

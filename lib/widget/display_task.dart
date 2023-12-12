@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:todolist/data/data.dart';
+import 'package:todolist/provider/provider.dart';
+import 'package:todolist/utils/app_alert.dart';
 import 'package:todolist/utils/utils.dart';
 import 'package:todolist/widget/widgets.dart';
 
-class DisplayTask extends StatelessWidget {
+class DisplayTask extends ConsumerWidget {
   const DisplayTask(
       {super.key, required this.tasks, this.isCompletedTasks = false});
 
   final List<Task> tasks;
   final bool isCompletedTasks;
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final deviceSize = context.deviceSize;
     final emptyMessageTask = isCompletedTasks
         ? 'There is no complated task yet'
@@ -34,7 +37,9 @@ class DisplayTask extends StatelessWidget {
               itemBuilder: (ctx, index) {
                 final task = tasks[index];
                 return InkWell(
-                  onLongPress: () {},
+                  onLongPress: () {
+                    AppAlert.showDeletedAlertDialog(context, ref, task);
+                  },
                   onTap: () async {
                     await showModalBottomSheet(
                         context: context,
@@ -46,6 +51,18 @@ class DisplayTask extends StatelessWidget {
                   },
                   child: TaskList(
                     task: task,
+                    onCompleted: (value) async {
+                      await ref
+                          .read(taskProvider.notifier)
+                          .updateTask(task)
+                          .then((value) => {
+                                AppAlert.displaySnacBar(
+                                    context,
+                                    task.isCompleted
+                                        ? 'Task unCompleted'
+                                        : 'Task completed')
+                              });
+                    },
                   ),
                 );
               },

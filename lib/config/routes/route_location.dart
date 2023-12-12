@@ -6,4 +6,5 @@ class RouteLocation {
 
   static String get home => '/home';
   static String get createTaskScreen => '/createTask';
+  static String get editTaskScreen => '/editTask';
 }
